@@ -24,6 +24,7 @@ public class User {
     private String password;
 
     private boolean mfaEnabled = false;
+    private String mfaSecret;
 
     private boolean enabled = true;
 
@@ -95,4 +96,14 @@ public class User {
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
+public String getMfaSecret() {
+    return mfaSecret;
 }
+
+public void setMfaSecret(String mfaSecret) {
+    this.mfaSecret = mfaSecret;
+}
+
+}
+
+
