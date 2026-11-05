@@ -26,18 +26,22 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final TotpService totpService;
+    private final AuditLogService auditLogService;
 
     public AuthService(
             UserRepository userRepository,
             RoleRepository roleRepository,
             PasswordEncoder passwordEncoder,
             JwtService jwtService,
-            TotpService totpService) {
+            TotpService totpService,
+            AuditLogService auditLogService) {
+
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.totpService = totpService;
+        this.auditLogService = auditLogService;
     }
 
     @Transactional
@@ -45,16 +49,19 @@ public class AuthService {
         if (username == null || username.isBlank()
                 || email == null || email.isBlank()
                 || password == null || password.length() < 8) {
-            throw new IllegalArgumentException("Тіркеу деректері дұрыс емес");
+            throw new IllegalArgumentException(
+                    "Тіркеу деректері дұрыс емес");
         }
 
         if (userRepository.existsByUsername(username)
                 || userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Логин немесе email тіркелген");
+            throw new IllegalArgumentException(
+                    "Логин немесе email тіркелген");
         }
 
         Role studentRole = roleRepository.findByName("STUDENT")
-                .orElseThrow(() -> new IllegalStateException("STUDENT рөлі табылмады"));
+                .orElseThrow(() -> new IllegalStateException(
+                        "STUDENT рөлі табылмады"));
 
         User user = new User();
         user.setUsername(username);
@@ -64,7 +71,12 @@ public class AuthService {
         user.setMfaSecret(totpService.generateSecret());
         user.getRoles().add(studentRole);
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        auditLogService.logAction(
+                username, "REGISTER", "Жаңа пайдаланушы тіркелді");
+
+        return savedUser;
     }
 
     @Transactional
@@ -80,7 +92,7 @@ public class AuthService {
         if (user.getLockTime() != null) {
             if (user.getLockTime().isAfter(LocalDateTime.now())) {
                 throw new IllegalArgumentException(
-                        "Аккаунт 15 минутқа уақытша бұғатталған");
+                        "Аккаунт уақытша бұғатталған");
             }
 
             user.setLockTime(null);
@@ -98,6 +110,10 @@ public class AuthService {
 
             userRepository.save(user);
 
+            auditLogService.logAction(
+                    username, "LOGIN_FAILED",
+                    "Қате кіру әрекеті. Әрекет саны: " + attempts);
+
             throw new IllegalArgumentException(
                     "Логин немесе құпиясөз қате");
         }
@@ -105,6 +121,9 @@ public class AuthService {
         user.setFailedLoginAttempts(0);
         user.setLockTime(null);
         userRepository.save(user);
+
+        auditLogService.logAction(
+                username, "LOGIN_SUCCESS", "Қолданушы жүйеге кірді");
 
         if (user.isMfaEnabled()) {
             throw new IllegalArgumentException("MFA коды қажет");
@@ -124,8 +143,14 @@ public class AuthService {
         }
 
         if (!totpService.verifyCode(user.getMfaSecret(), code)) {
+            auditLogService.logAction(
+                    username, "MFA_FAILED", "MFA коды қате");
+
             throw new IllegalArgumentException("MFA коды қате");
         }
+
+        auditLogService.logAction(
+                username, "MFA_SUCCESS", "MFA тексеруі сәтті өтті");
 
         return generateTokens(username);
     }
@@ -146,6 +171,9 @@ public class AuthService {
 
         user.setMfaEnabled(true);
         userRepository.save(user);
+
+        auditLogService.logAction(
+                username, "MFA_ENABLED", "MFA белсендірілді");
 
         return "MFA сәтті қосылды";
     }
