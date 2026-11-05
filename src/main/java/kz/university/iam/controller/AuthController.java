@@ -6,6 +6,7 @@ import kz.university.iam.service.AuthService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -33,8 +34,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(Map.of(
                             "message", "Тіркелу сәтті аяқталды",
-                            "username", user.getUsername(),
-                            "mfaSecret", user.getMfaSecret()
+                            "username", user.getUsername()
                     ));
 
         } catch (IllegalArgumentException e) {
@@ -53,6 +53,7 @@ public class AuthController {
                             request.get("password")
                     )
             );
+
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", e.getMessage()));
@@ -69,27 +70,36 @@ public class AuthController {
                             request.get("code")
                     )
             );
-       @PostMapping("/enable-mfa")
-public ResponseEntity<?> enableMfa(
-        @RequestBody Map<String, String> request) {
-    try {
-        String result = authService.enableMfa(
-                request.get("username"),
-                request.get("code")
-        );
 
-        return ResponseEntity.ok(
-                Map.of("message", result)
-        );
-
-    } catch (IllegalArgumentException e) {
-        return ResponseEntity.badRequest()
-                .body(Map.of("error", e.getMessage()));
-    }
-}
-        
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/enable-mfa")
+    public ResponseEntity<?> enableMfa(
+            @RequestBody Map<String, String> request,
+            Authentication authentication) {
+
+        if (authentication == null
+                || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Аутентификация қажет"));
+        }
+
+        try {
+            String result = authService.enableMfa(
+                    authentication.getName(),
+                    request.get("code")
+            );
+
+            return ResponseEntity.ok(
+                    Map.of("message", result)
+            );
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
                     .body(Map.of("error", e.getMessage()));
         }
     }
