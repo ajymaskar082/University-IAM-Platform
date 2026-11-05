@@ -5,7 +5,7 @@ sequenceDiagram
     participant AC as AuthController
     participant AS as AuthService
     participant DB as PostgreSQL
-    participant BC as BCrypt
+    participant BC as BCrypt 
     participant MFA as MfaService
     participant JWT as JwtService
 
