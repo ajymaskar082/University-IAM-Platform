@@ -23,7 +23,6 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(
             @RequestBody Map<String, String> request) {
-
         try {
             User user = authService.register(
                     request.get("username"),
@@ -34,7 +33,8 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(Map.of(
                             "message", "Тіркелу сәтті аяқталды",
-                            "username", user.getUsername()
+                            "username", user.getUsername(),
+                            "mfaSecret", user.getMfaSecret()
                     ));
 
         } catch (IllegalArgumentException e) {
@@ -46,15 +46,29 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(
             @RequestBody Map<String, String> request) {
-
         try {
-            Map<String, String> tokens = authService.login(
-                    request.get("username"),
-                    request.get("password")
+            return ResponseEntity.ok(
+                    authService.login(
+                            request.get("username"),
+                            request.get("password")
+                    )
             );
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
 
-            return ResponseEntity.ok(tokens);
-
+    @PostMapping("/verify-mfa")
+    public ResponseEntity<?> verifyMfa(
+            @RequestBody Map<String, String> request) {
+        try {
+            return ResponseEntity.ok(
+                    authService.verifyMfa(
+                            request.get("username"),
+                            request.get("code")
+                    )
+            );
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", e.getMessage()));
