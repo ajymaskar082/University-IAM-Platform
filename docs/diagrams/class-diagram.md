@@ -6,7 +6,7 @@ classDiagram
         +String email
         +String password
         +boolean mfaEnabled
-        +boolean enabled
+        +boolean enabled 
         +register()
         +updateProfile()
     }
