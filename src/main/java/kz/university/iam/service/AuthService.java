@@ -29,7 +29,6 @@ public class AuthService {
             PasswordEncoder passwordEncoder,
             JwtService jwtService,
             TotpService totpService) {
-
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -38,76 +37,67 @@ public class AuthService {
     }
 
     @Transactional
-    public User register(
-            String username,
-            String email,
-            String password) {
-
+    public User register(String username, String email, String password) {
         if (username == null || username.isBlank()
                 || email == null || email.isBlank()
                 || password == null || password.length() < 8) {
-            throw new IllegalArgumentException(
-                    "Деректер дұрыс емес. Құпиясөз кемінде 8 таңбадан тұруы керек."
-            );
+            throw new IllegalArgumentException("Тіркеу деректері дұрыс емес");
         }
 
-        if (userRepository.existsByUsername(username)) {
-            throw new IllegalArgumentException(
-                    "Бұл логин бұрын тіркелген"
-            );
-        }
-
-        if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException(
-                    "Бұл email бұрын тіркелген"
-            );
+        if (userRepository.existsByUsername(username)
+                || userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("Логин немесе email тіркелген");
         }
 
         Role studentRole = roleRepository.findByName("STUDENT")
-                .orElseThrow(() -> new IllegalStateException(
-                        "STUDENT рөлі табылмады"
-                ));
+                .orElseThrow(() -> new IllegalStateException("STUDENT рөлі табылмады"));
 
         User user = new User();
         user.setUsername(username);
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
-
         user.setMfaEnabled(false);
         user.setMfaSecret(totpService.generateSecret());
-
         user.getRoles().add(studentRole);
 
         return userRepository.save(user);
     }
 
-    public Map<String, String> login(
-            String username,
-            String password) {
-
+    public Map<String, String> login(String username, String password) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Логин немесе құпиясөз қате"
-                ));
+                .orElseThrow(() -> new IllegalArgumentException("Логин немесе құпиясөз қате"));
 
         if (!user.isEnabled()
-                || !passwordEncoder.matches(
-                        password, user.getPassword())) {
-
-            throw new IllegalArgumentException(
-                    "Логин немесе құпиясөз қате"
-            );
+                || !passwordEncoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("Логин немесе құпиясөз қате");
         }
 
-        String accessToken =
-                jwtService.generateAccessToken(username);
+        if (user.isMfaEnabled()) {
+            throw new IllegalArgumentException("MFA коды қажет");
+        }
 
-        String refreshToken =
-                jwtService.generateRefreshToken(username);
+        return generateTokens(username);
+    }
 
+    public Map<String, String> verifyMfa(String username, String code) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Пайдаланушы табылмады"));
+
+        if (!user.isEnabled() || !user.isMfaEnabled()) {
+            throw new IllegalArgumentException("MFA белсенді емес");
+        }
+
+        if (!totpService.verifyCode(user.getMfaSecret(), code)) {
+            throw new IllegalArgumentException("MFA коды қате");
+        }
+
+        return generateTokens(username);
+    }
+
+    private Map<String, String> generateTokens(String username) {
         return Map.of(
-                "accessToken", accessToken,
-                "refreshToken", refreshToken,
+                "accessToken", jwtService.generateAccessToken(username),
+                "refreshToken", jwtService.generateRefreshToken(username),
                 "tokenType", "Bearer"
         );
     }
