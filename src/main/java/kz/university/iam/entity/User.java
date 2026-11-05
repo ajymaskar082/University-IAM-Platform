@@ -14,19 +14,24 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true, nullable = false)
     private String username;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
     @Column(nullable = false)
     private String password;
 
     private boolean mfaEnabled = false;
+
     private String mfaSecret;
 
     private boolean enabled = true;
+
+    private int failedLoginAttempts = 0;
+
+    private LocalDateTime lockTime;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -77,12 +82,36 @@ public class User {
         this.mfaEnabled = mfaEnabled;
     }
 
+    public String getMfaSecret() {
+        return mfaSecret;
+    }
+
+    public void setMfaSecret(String mfaSecret) {
+        this.mfaSecret = mfaSecret;
+    }
+
     public boolean isEnabled() {
         return enabled;
     }
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public int getFailedLoginAttempts() {
+        return failedLoginAttempts;
+    }
+
+    public void setFailedLoginAttempts(int failedLoginAttempts) {
+        this.failedLoginAttempts = failedLoginAttempts;
+    }
+
+    public LocalDateTime getLockTime() {
+        return lockTime;
+    }
+
+    public void setLockTime(LocalDateTime lockTime) {
+        this.lockTime = lockTime;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -92,18 +121,4 @@ public class User {
     public Set<Role> getRoles() {
         return roles;
     }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-public String getMfaSecret() {
-    return mfaSecret;
 }
-
-public void setMfaSecret(String mfaSecret) {
-    this.mfaSecret = mfaSecret;
-}
-
-}
-
-
