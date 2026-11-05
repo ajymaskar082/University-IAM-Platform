@@ -9,7 +9,7 @@ classDiagram
         +boolean enabled 
         +register()
         +updateProfile()
-    }
+    } 
 
     class Role {
         +Long id
