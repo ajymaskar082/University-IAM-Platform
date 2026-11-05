@@ -42,4 +42,22 @@ public class AuthController {
                     .body(Map.of("error", e.getMessage()));
         }
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(
+            @RequestBody Map<String, String> request) {
+
+        try {
+            Map<String, String> tokens = authService.login(
+                    request.get("username"),
+                    request.get("password")
+            );
+
+            return ResponseEntity.ok(tokens);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
 }
