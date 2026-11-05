@@ -1,8 +1,10 @@
 
 package kz.university.iam.controller;
 
+import kz.university.iam.entity.AuditLog;
 import kz.university.iam.entity.User;
 import kz.university.iam.repository.UserRepository;
+import kz.university.iam.service.AuditLogService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,9 +18,13 @@ import java.util.Map;
 public class AdminController {
 
     private final UserRepository userRepository;
+    private final AuditLogService auditLogService;
 
-    public AdminController(UserRepository userRepository) {
+    public AdminController(
+            UserRepository userRepository,
+            AuditLogService auditLogService) {
         this.userRepository = userRepository;
+        this.auditLogService = auditLogService;
     }
 
     @GetMapping("/users")
@@ -62,5 +68,11 @@ public class AdminController {
         return ResponseEntity.ok(
                 Map.of("message", "Пайдаланушы статусы жаңартылды")
         );
+    }
+
+    @GetMapping("/audit-logs")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<AuditLog>> getAuditLogs() {
+        return ResponseEntity.ok(auditLogService.getAllLogs());
     }
 }
