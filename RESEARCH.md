@@ -96,3 +96,61 @@ BCrypt, JWT, TOTP, RBAC және ABAC механизмдері жүйенің қ
 2. OWASP Password Storage Cheat Sheet – https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
 3. RFC 7519 – JSON Web Token – https://www.rfc-editor.org/rfc/rfc7519.html
 4. RFC 6238 – TOTP – https://www.rfc-editor.org/rfc/rfc6238.html
+
+
+## 9. Security Analysis and Risk Assessment
+
+### 9.1 Main Security Risks
+
+The University IAM Platform may face several security risks:
+
+- Brute-force attacks: attackers may repeatedly try different passwords.
+- Password theft: weak or exposed passwords can compromise user accounts.
+- Token theft: stolen JWT tokens may allow unauthorized access.
+- Unauthorized access: users may attempt to access resources without sufficient permissions.
+- MFA bypass: attackers may try to bypass the second authentication factor.
+- Insider threats: users with excessive privileges may misuse their access.
+
+### 9.2 Security Measures
+
+The proposed system uses several security mechanisms:
+
+| Security Risk | Protection Mechanism |
+|---|---|
+| Password theft | BCrypt password hashing |
+| Brute-force attacks | Login attempt limiting |
+| Unauthorized access | RBAC |
+| Context-based access risks | ABAC |
+| Token manipulation | JWT signature validation |
+| Account compromise | TOTP-based MFA |
+| Lack of accountability | Audit logging |
+
+### 9.3 Limitations
+
+The current implementation is a prototype. Further improvements are required:
+
+- Encrypting MFA secrets in the database.
+- Implementing refresh token rotation and revocation.
+- Adding IP-based rate limiting.
+- Improving audit log integrity.
+- Adding automated security tests.
+- Implementing a complete administrative web interface.
+
+## 10. Conclusion
+
+The University IAM Platform provides a centralized approach to identity and access management in a university environment.
+
+The proposed architecture combines authentication, authorization, multi-factor authentication, account protection, and audit logging.
+
+Spring Boot and Spring Security provide the application framework, PostgreSQL stores user information, BCrypt protects passwords, JWT supports token-based authentication, and TOTP adds an additional authentication factor.
+
+The project demonstrates how modern security mechanisms can be combined to improve the protection of university information systems.
+
+## 11. References
+
+1. Spring Security Documentation: https://docs.spring.io/spring-security/reference/
+2. OWASP Password Storage Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+3. RFC 7519 - JSON Web Token: https://www.rfc-editor.org/rfc/rfc7519
+4. RFC 6238 - TOTP: https://www.rfc-editor.org/rfc/rfc6238
+5. OWASP Authentication Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html
+6. PostgreSQL Documentation: https://www.postgresql.org/docs/
