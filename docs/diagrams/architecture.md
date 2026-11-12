@@ -1,15 +1,16 @@
 
+# System Architecture — University IAM Platform
+
+```mermaid
 flowchart TB
-    subgraph CLIENT["Клиенттік деңгей"]
-        UI["Thymeleaf Web Interface"]
-        USER["Студент / Оқытушы / Әкімші"]
-    end
+    USER["Пайдаланушы"]
+    UI["Thymeleaf Web Interface"]
 
     subgraph BACKEND["Серверлік деңгей — Spring Boot"]
         SEC["Spring Security"]
         AUTH["Authentication Service"]
-        JWT["JWT Service"]
         MFA["MFA / TOTP Service"]
+        JWT["JWT Service"]
         RBAC["RBAC / ABAC Service"]
         AUDIT["Audit Log Service"]
         ADMIN["Admin Panel"]
@@ -26,15 +27,22 @@ flowchart TB
     USER --> UI
     UI --> SEC
     SEC --> AUTH
-    AUTH --> JWT
     AUTH --> MFA
-    SEC --> RBAC
-    AUTH --> AUDIT
+    MFA --> JWT
+    JWT --> RBAC
     RBAC --> ADMIN
+
+    AUTH --> AUDIT
+    SEC --> AUDIT
+
     AUTH --> DB
+    MFA --> DB
+    JWT --> DB
     RBAC --> DB
     AUDIT --> DB
-    DB --> USERS
-    DB --> ROLES
-    DB --> LOGS
-    DB --> ATTEMPTS
+
+    DB --- USERS
+    DB --- ROLES
+    DB --- LOGS
+    DB --- ATTEMPTS
+```
