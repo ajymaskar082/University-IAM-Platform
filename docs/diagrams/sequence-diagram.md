@@ -1,11 +1,12 @@
 
+```mermaid
 sequenceDiagram
     actor User as Пайдаланушы
     participant UI as Веб-интерфейс
     participant AC as AuthController
     participant AS as AuthService
     participant DB as PostgreSQL
-    participant BC as BCrypt 
+    participant BC as BCrypt
     participant MFA as MfaService
     participant JWT as JwtService
 
@@ -36,3 +37,4 @@ sequenceDiagram
         AC-->>UI: 200 OK + токендер
         UI-->>User: Жүйеге сәтті кіру
     end
+```
