@@ -46,6 +46,7 @@ public class AuthService {
 
     @Transactional
     public User register(String username, String email, String password) {
+
         if (username == null || username.isBlank()
                 || email == null || email.isBlank()
                 || password == null || password.length() < 8) {
@@ -74,22 +75,27 @@ public class AuthService {
         User savedUser = userRepository.save(user);
 
         auditLogService.logAction(
-                username, "REGISTER", "Жаңа пайдаланушы тіркелді");
+                username, "REGISTER",
+                "Жаңа пайдаланушы тіркелді");
 
         return savedUser;
     }
 
-    @Transactional
-    public Map<String, String> login(String username, String password) {
+    @Transactional(noRollbackFor = IllegalArgumentException.class)
+    public Map<String, String> login(
+            String username, String password) {
+
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Логин немесе құпиясөз қате"));
 
         if (!user.isEnabled()) {
-            throw new IllegalArgumentException("Аккаунт өшірілген");
+            throw new IllegalArgumentException(
+                    "Аккаунт өшірілген");
         }
 
         if (user.getLockTime() != null) {
+
             if (user.getLockTime().isAfter(LocalDateTime.now())) {
                 throw new IllegalArgumentException(
                         "Аккаунт уақытша бұғатталған");
@@ -99,20 +105,24 @@ public class AuthService {
             user.setFailedLoginAttempts(0);
         }
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+        if (!passwordEncoder.matches(
+                password, user.getPassword())) {
+
             int attempts = user.getFailedLoginAttempts() + 1;
             user.setFailedLoginAttempts(attempts);
 
             if (attempts >= MAX_ATTEMPTS) {
                 user.setLockTime(
-                        LocalDateTime.now().plusMinutes(LOCK_MINUTES));
+                        LocalDateTime.now()
+                                .plusMinutes(LOCK_MINUTES));
             }
 
             userRepository.save(user);
 
             auditLogService.logAction(
-                    username, "LOGIN_FAILED",
-                    "Қате кіру әрекеті. Әрекет саны: " + attempts);
+                    username,
+                    "LOGIN_FAILED",
+                    "Қате кіру әрекеті: " + attempts);
 
             throw new IllegalArgumentException(
                     "Логин немесе құпиясөз қате");
@@ -122,67 +132,101 @@ public class AuthService {
         user.setLockTime(null);
         userRepository.save(user);
 
-        auditLogService.logAction(
-                username, "LOGIN_SUCCESS", "Қолданушы жүйеге кірді");
-
         if (user.isMfaEnabled()) {
-            throw new IllegalArgumentException("MFA коды қажет");
+
+            auditLogService.logAction(
+                    username,
+                    "MFA_REQUIRED",
+                    "Бір реттік код енгізу қажет");
+
+            return Map.of(
+                    "mfaRequired", "true",
+                    "username", username
+            );
         }
+
+        auditLogService.logAction(
+                username,
+                "LOGIN_SUCCESS",
+                "Қолданушы жүйеге кірді");
 
         return generateTokens(username);
     }
 
     @Transactional
-    public Map<String, String> verifyMfa(String username, String code) {
+    public Map<String, String> verifyMfa(
+            String username, String code) {
+
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Пайдаланушы табылмады"));
 
         if (!user.isEnabled() || !user.isMfaEnabled()) {
-            throw new IllegalArgumentException("MFA белсенді емес");
+            throw new IllegalArgumentException(
+                    "MFA белсенді емес");
         }
 
-        if (!totpService.verifyCode(user.getMfaSecret(), code)) {
-            auditLogService.logAction(
-                    username, "MFA_FAILED", "MFA коды қате");
+        if (!totpService.verifyCode(
+                user.getMfaSecret(), code)) {
 
-            throw new IllegalArgumentException("MFA коды қате");
+            auditLogService.logAction(
+                    username,
+                    "MFA_FAILED",
+                    "MFA коды қате");
+
+            throw new IllegalArgumentException(
+                    "MFA коды қате");
         }
 
         auditLogService.logAction(
-                username, "MFA_SUCCESS", "MFA тексеруі сәтті өтті");
+                username,
+                "LOGIN_SUCCESS",
+                "MFA арқылы жүйеге кіру сәтті аяқталды");
 
         return generateTokens(username);
     }
 
     @Transactional
     public String enableMfa(String username, String code) {
+
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Пайдаланушы табылмады"));
 
         if (user.isMfaEnabled()) {
-            throw new IllegalArgumentException("MFA бұрыннан қосылған");
+            throw new IllegalArgumentException(
+                    "MFA бұрыннан қосылған");
         }
 
-        if (!totpService.verifyCode(user.getMfaSecret(), code)) {
-            throw new IllegalArgumentException("MFA коды қате");
+        if (!totpService.verifyCode(
+                user.getMfaSecret(), code)) {
+            throw new IllegalArgumentException(
+                    "MFA коды қате");
         }
 
         user.setMfaEnabled(true);
         userRepository.save(user);
 
         auditLogService.logAction(
-                username, "MFA_ENABLED", "MFA белсендірілді");
+                username,
+                "MFA_ENABLED",
+                "MFA белсендірілді");
 
         return "MFA сәтті қосылды";
     }
 
-    private Map<String, String> generateTokens(String username) {
+    private Map<String, String> generateTokens(
+            String username) {
+
         return Map.of(
-                "accessToken", jwtService.generateAccessToken(username),
-                "refreshToken", jwtService.generateRefreshToken(username),
-                "tokenType", "Bearer"
+                "accessToken",
+                jwtService.generateAccessToken(username),
+
+                "refreshToken",
+                jwtService.generateRefreshToken(username),
+
+                "tokenType",
+                "Bearer"
         );
     }
 }
