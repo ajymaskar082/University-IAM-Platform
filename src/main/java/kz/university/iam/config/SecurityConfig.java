@@ -1,3 +1,4 @@
+
 package kz.university.iam.config;
 
 import kz.university.iam.security.JwtAuthenticationFilter;
@@ -31,16 +32,20 @@ public class SecurityConfig {
 
         http
             .csrf(csrf -> csrf.disable())
+
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
+
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-    "/api/auth/register",
-    "/api/auth/login"
-).permitAll()
+                    "/api/auth/register",
+                    "/api/auth/login",
+                    "/api/auth/verify-mfa"
+                ).permitAll()
                 .anyRequest().authenticated()
             )
+
             .addFilterBefore(
                 jwtAuthenticationFilter,
                 UsernamePasswordAuthenticationFilter.class
