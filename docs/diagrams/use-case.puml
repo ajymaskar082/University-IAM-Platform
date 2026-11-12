@@ -1,0 +1,95 @@
+@startuml
+left to right direction
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam actorStyle stickman
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+
+skinparam usecase {
+    BackgroundColor #EAF2F8
+    BorderColor #2874A6
+    ArrowColor #34495E
+}
+
+skinparam rectangle {
+    BorderColor #2874A6
+    BackgroundColor #F8FBFF
+}
+
+actor "БАС ӘКІМШІ" as SA
+actor "ӘКІМШІ" as A
+actor "СТУДЕНТ" as ST
+actor "ОҚЫТУШЫ" as T
+actor "ДЕКАН" as D
+actor "КАДР МАМАНЫ" as HR
+actor "ҚАУІПСІЗДІК МАМАНЫ" as SO
+
+rectangle "Университеттің сәйкестендіру және қолжетімділікті басқару жүйесі" {
+
+    usecase "Пайдаланушыны тіркеу" as UC1
+    usecase "Жүйеге кіру" as UC2
+    usecase "Көп факторлы тексеру" as UC3
+    usecase "Сессиялар мен токендерді басқару" as UC4
+
+    usecase "Пайдаланушылар мен рөлдерді басқару" as UC5
+    usecase "Тіркелгі күйін басқару" as UC6
+    usecase "Қауіпсіздік саясатын басқару" as UC7
+
+    usecase "Қорғалған ресурстарға қол жеткізу" as UC8
+    usecase "Рөлдер бойынша құқықтарды тексеру" as UC9
+    usecase "Атрибуттар бойынша құқықтарды тексеру" as UC10
+
+    usecase "Жеке профильді басқару" as UC11
+    usecase "Оқу ақпаратын қарау" as UC12
+    usecase "Пәндер мен бағаларды басқару" as UC13
+    usecase "Факультет ақпаратын басқару" as UC14
+    usecase "Қызметкерлер тіркелгілерін басқару" as UC15
+
+    usecase "Қауіпсіздік оқиғалары мен журналдарын бақылау" as UC16
+}
+
+SA --> UC1
+SA --> UC2
+SA --> UC5
+SA --> UC6
+SA --> UC7
+SA --> UC16
+
+A --> UC1
+A --> UC2
+A --> UC5
+A --> UC6
+
+ST --> UC2
+ST --> UC4
+ST --> UC8
+ST --> UC11
+ST --> UC12
+
+T --> UC2
+T --> UC4
+T --> UC8
+T --> UC11
+T --> UC13
+
+D --> UC2
+D --> UC8
+D --> UC11
+D --> UC14
+
+HR --> UC2
+HR --> UC8
+HR --> UC15
+
+SO --> UC2
+SO --> UC7
+SO --> UC16
+
+UC2 ..> UC3 : <<extend>>
+UC2 ..> UC4 : <<include>>
+UC8 ..> UC9 : <<include>>
+UC8 ..> UC10 : <<include>>
+
+@enduml
