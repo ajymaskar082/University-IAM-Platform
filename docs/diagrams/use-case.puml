@@ -87,7 +87,7 @@ SO --> UC2
 SO --> UC7
 SO --> UC16
 
-UC2 ..> UC3 : <<extend>>
+UC3 ..> UC2 : <<extend>>
 UC2 ..> UC4 : <<include>>
 UC8 ..> UC9 : <<include>>
 UC8 ..> UC10 : <<include>>
