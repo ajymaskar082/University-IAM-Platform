@@ -1,0 +1,9 @@
+[
+  {"id": 1, "username": "admin", "fullName": "Асылхан Ермеков", "faculty": "Әкімшілік", "role": "ADMIN", "status": "ACTIVE"},
+  {"id": 2, "username": "teacher1", "fullName": "Гүлнар Сәрсенова", "faculty": "Информатика", "role": "TEACHER", "status": "ACTIVE"},
+  {"id": 3, "username": "teacher2", "fullName": "Марат Омаров", "faculty": "Математика", "role": "TEACHER", "status": "ACTIVE"},
+  {"id": 4, "username": "student1", "fullName": "Айгерім Нұрланқызы", "faculty": "Информатика", "role": "STUDENT", "status": "BLOCKED"},
+  {"id": 5, "username": "student2", "fullName": "Данияр Қайратұлы", "faculty": "Информатика", "role": "STUDENT", "status": "ACTIVE"},
+  {"id": 6, "username": "student3", "fullName": "Алуа Төлеубай", "faculty": "Математика", "role": "STUDENT", "status": "ACTIVE"},
+  {"id": 7, "username": "student4", "fullName": "Ербол Серікұлы", "faculty": "Математика", "role": "STUDENT", "status": "GRADUATED"}
+]

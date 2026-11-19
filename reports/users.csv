@@ -1,0 +1,8 @@
+﻿id,username,full_name,faculty,role,status
+1,admin,Асылхан Ермеков,Әкімшілік,ADMIN,ACTIVE
+2,teacher1,Гүлнар Сәрсенова,Информатика,TEACHER,ACTIVE
+3,teacher2,Марат Омаров,Математика,TEACHER,ACTIVE
+4,student1,Айгерім Нұрланқызы,Информатика,STUDENT,BLOCKED
+5,student2,Данияр Қайратұлы,Информатика,STUDENT,ACTIVE
+6,student3,Алуа Төлеубай,Математика,STUDENT,ACTIVE
+7,student4,Ербол Серікұлы,Математика,STUDENT,GRADUATED
