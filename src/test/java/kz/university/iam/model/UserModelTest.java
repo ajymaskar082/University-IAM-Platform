@@ -46,5 +46,26 @@ class UserModelTest {
         assertFalse(PasswordHasher.verify("wrong", h1));
         assertNotEquals(h1, h2);
     }
+   @Test
+void userIdCanBeUpdated() {
+    User s = student();
+    s.setId(99);
+    assertEquals(99, s.getId());
+}
+
+@Test
+void graduatedStudentCannotAccessResources() {
+    User s = student();
+    s.setStatus(AccountStatus.GRADUATED);
+    assertFalse(s.canAccess("profile"));
+}
+
+@Test
+void accountStatusTitlesAreCorrect() {
+    assertEquals("Белсенді", AccountStatus.ACTIVE.getTitle());
+    assertEquals("Бұғатталған", AccountStatus.BLOCKED.getTitle());
+    assertEquals("Оқуын бітірген", AccountStatus.GRADUATED.getTitle());
+}
+
 }
 // <<< [ТАЛАП: ТЕСТІЛЕУ] model модулі аяқталды
