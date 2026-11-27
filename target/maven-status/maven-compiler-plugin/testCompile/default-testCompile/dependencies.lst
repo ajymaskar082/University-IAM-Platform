@@ -1,0 +1,11 @@
+classpath:/mnt/c/Users/Айым/University-IAM-Platform/target/classes	22:bc894ba67d322046b2c0c49905d020ef2a143f2f8afcdc7535ea3faeeba93952
+classpath:/home/aiym/.m2/repository/org/xerial/sqlite-jdbc/3.45.3.0/sqlite-jdbc-3.45.3.0.jar	13513352:1795753575788
+classpath:/home/aiym/.m2/repository/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar	41125:1795085721678
+classpath:/home/aiym/.m2/repository/org/junit/jupiter/junit-jupiter/5.10.2/junit-jupiter-5.10.2.jar	6359:1795720539895
+classpath:/home/aiym/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.10.2/junit-jupiter-api-5.10.2.jar	210956:1795720541048
+classpath:/home/aiym/.m2/repository/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar	14304:1795003043430
+classpath:/home/aiym/.m2/repository/org/junit/platform/junit-platform-commons/1.10.2/junit-platform-commons-1.10.2.jar	106232:1795720539956
+classpath:/home/aiym/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar	6806:1795003044523
+classpath:/home/aiym/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.10.2/junit-jupiter-params-5.10.2.jar	586027:1795720541556
+classpath:/home/aiym/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.10.2/junit-jupiter-engine-5.10.2.jar	244690:1795720540944
+classpath:/home/aiym/.m2/repository/org/junit/platform/junit-platform-engine/1.10.2/junit-platform-engine-1.10.2.jar	204821:1795720540680
