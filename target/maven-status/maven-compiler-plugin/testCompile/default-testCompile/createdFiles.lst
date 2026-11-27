@@ -1,5 +1,0 @@
-kz/university/iam/model/UserModelTest.class
-kz/university/iam/repository/InMemoryRepositoryTest.class
-kz/university/iam/service/AnalyticsServiceTest.class
-kz/university/iam/dao/JdbcUserDaoTest.class
-kz/university/iam/export/ReportExporterTest.class
